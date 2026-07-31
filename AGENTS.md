@@ -20,6 +20,7 @@
 - [x] **據點已全量重新標點**：使用者用工具「1:1」模式重標 63 點（commit 182ceac），以房子圖示底部對準座標（style.css `.marker` 錨點修正，commit 237cff6），使用者確認位置 OK
 - [x] **38 個兵裝截圖已上線**：`assets/soldier/`（檔名已由使用者改中文 → 轉拼音，如 丹陽兵=`danyangbing.png`），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}}`
 - [x] **兵裝清單改為純圖片顯示**（app.js `renderSidebar` 用 `<img>`，圖上本身有兵裝名稱；commit 15f66b5）
+- [x] **手機版優化**（commit b4d0184、4194fb1）：地圖可縮放（右下角 ＋/−/100% 按鈕，**標點隨地圖同步縮放**）、桌面滑鼠**拖曳移動**地圖（drag-to-pan，拖曳不會誤觸據點）、手機彈窗**固定左上角**、手機縮放按鈕改放右上並觸控最佳化（touch-action/safe-area）。主要使用場景為電腦。
 - [ ] **據點⇄兵裝對應尚未提供**（`data/markers.json` 目前所有據點 `items: []`）——下次對話的主要工作
 - [ ] 兵裝材料（items 的 `materials`）未提供（目前全空）
 
