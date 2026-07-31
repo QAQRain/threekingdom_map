@@ -17,17 +17,21 @@
 - [x] **真實地圖已上線**：`assets/map.png`（1122x771，來源 `assets/map/new.png`）
 - [x] **63 個真實據點座標已匯入** `data/markers.json`（名字已轉繁體）
 - [x] **座標點選工具**：`tools/coord-picker.html`（載入地圖點擊標記＋輸入名字＋匯出 JSON）
-- [ ] **真實兵裝資料尚未提供**（`data/items.json` 是示範資料）
-- [ ] **據點 items 對應尚未提供**（目前所有據點 `items: []`）
+- [x] **據點已全量重新標點**：使用者用工具「1:1」模式重標 63 點（commit 182ceac），以房子圖示底部對準座標（style.css `.marker` 錨點修正，commit 237cff6），使用者確認位置 OK
+- [x] **38 個兵裝截圖已上線**：`assets/soldier/`（檔名已由使用者改中文 → 轉拼音，如 丹陽兵=`danyangbing.png`），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}}`
+- [x] **兵裝清單改為純圖片顯示**（app.js `renderSidebar` 用 `<img>`，圖上本身有兵裝名稱；commit 15f66b5）
+- [ ] **據點⇄兵裝對應尚未提供**（`data/markers.json` 目前所有據點 `items: []`）——下次對話的主要工作
+- [ ] 兵裝材料（items 的 `materials`）未提供（目前全空）
 
 ## 檔案結構
 
 - `index.html` / `style.css` / `app.js`：全部互動邏輯
-- `data/items.json`：兵裝 `{ id, name, materials: {材料:數量} }`（目前為示範資料）
+- `data/items.json`：兵裝 `{ id, name, image, materials: {材料:數量} }`，`id` 為拼音檔名，`image` 指向 `assets/soldier/<拼音>.png`
 - `data/markers.json`：63 據點 `{ id, name, x, y, items: [兵裝id] }`，`x`/`y` 是地圖上的百分比（0–100，左上角 0,0）
 - `assets/map.png`：正式地圖背景（1122x771）。換圖要同時改 `style.css` 的 `.map-wrap` `aspect-ratio`（目前 `1122 / 771`）
-- `assets/map/`：地圖素材與截圖（**未 commit**，僅本機留存；含 `B.png`、`new.png`、6 張截圖、分析暫存圖）
-- `tools/coord-picker.html`：據點座標點選工具，圖片來源 `../assets/map/new.png`，localStorage key `coord_picker_markers_new`
+- `assets/soldier/`：38 個兵裝截圖（拼音檔名，**已 commit**）
+- `assets/map/`：地圖素材與截圖（**未 commit**，僅本機留存；含 `B.png`、`new.png`、截圖等）
+- `tools/coord-picker.html`：據點座標點選工具，圖片來源 `../assets/map/new.png`，localStorage key `coord_picker_markers_new`，有「1:1」按鈕以原始尺寸檢視
 - `README.md`：給使用者看的資料編輯說明
 
 ## 本機驗證
@@ -39,7 +43,7 @@
 
 - remote：`https://github.com/QAQRain/threekingdom_map.git`（branch `main`）
 - **push 需要 GitHub PAT**。先前 token 已給過，但使用者可能已撤銷；要 push 時需重新向使用者索取。
-- 避免把 token 存進 remote URL：`git -C <dir> -c http.extraHeader="Authorization: Bearer <TOKEN>" push` 或內嵌 URL push 後立刻清除 remote URL。
+- ⚠ **push 被拒經驗**（repository rule violations）：曾因 `git add -A` 把 `assets/map/` 未 commit 素材一起加入而導致 push 被拒；**務必只 add 要上傳的檔案**（如 `git add data/markers.json app.js style.css assets/soldier/`），不要 `add -A`。
 - ⚠ 本環境實測：`http.extraHeader` 方式被 GitHub 拒為 `invalid credentials`；**改用一次性內嵌 URL** 可成功：
   `git -C <dir> push "https://<USER>:<TOKEN>@github.com/QAQRain/threekingdom_map.git" main`（remote 設定不受影響）
 - repo 沒有本機 git 身份設定，commit 要用 `git -C <dir> -c user.name=QAQRain -c user.email=qaqrain@gmail.com commit ...` 或先設定 config。
@@ -54,3 +58,12 @@
 ## 使用者偏好
 
 - 一律使用繁體中文回覆。
+
+## 下次對話主要任務
+
+1. **據點⇄兵裝對應**：使用者提供每個據點能造的兵裝（貼 `markers.json` 或對應清單），填入 `data/markers.json` 各據點的 `items`，push 後即完成雙向連動。
+2. （可選）兵裝材料資料（`items.materials`）。
+
+## 環境限制（重要）
+
+- **模型無法讀取圖片**（工具能 read 圖片檔但模型無法辨識內容）；分辨兵裝截圖需仰賴使用者提供對應名稱，或由使用者自行將檔名改為中文後再由 AI 轉拼音。
