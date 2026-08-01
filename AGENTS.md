@@ -18,16 +18,17 @@
 - [x] **63 個真實據點座標已匯入** `data/markers.json`（名字已轉繁體）
 - [x] **座標點選工具**：`tools/coord-picker.html`（載入地圖點擊標記＋輸入名字＋匯出 JSON）
 - [x] **據點已全量重新標點**：使用者用工具「1:1」模式重標 63 點（commit 182ceac），以房子圖示底部對準座標（style.css `.marker` 錨點修正，commit 237cff6），使用者確認位置 OK
-- [x] **兵裝截圖已上線**：`assets/soldier/`（檔名已由使用者改中文 → 轉拼音，如 丹陽兵=`danyangbing.png`），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}, craftable}`。其中 **7 個非兵裝單位**（刀牌手、工匠團、弓箭衛、弩衛、採藥隊、突騎營、長槍營）標 `craftable: false`，顯示在列表最底部、點擊無作用（app.js `renderSidebar` 排序 + `.inactive` 樣式）
+- [x] **兵裝截圖已上線**：`assets/soldier/`（檔名已加星數前綴，如 `3_danyangbing.png`，id 仍為拼音、由檔名去掉 `星數_` 前綴取得），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}, craftable, tier}`。其中 **7 個非兵裝單位**（刀牌手、工匠團、弓箭衛、弩衛、採藥隊、突騎營、長槍營）標 `craftable: false`，顯示在列表最底部、圖片保持原色、點擊無作用。tier 已全部依星數填入
 - [x] **兵裝清單改為純圖片顯示**（app.js `renderSidebar` 用 `<img>`，圖上本身有兵裝名稱；commit 15f66b5）
 - [x] **手機版優化**（commit b4d0184、4194fb1）：地圖可縮放（右下角 ＋/−/100% 按鈕，**標點隨地圖同步縮放**）、桌面滑鼠**拖曳移動**地圖（drag-to-pan，拖曳不會誤觸據點）、手機彈窗**固定左上角**、手機縮放按鈕改放右上並觸控最佳化（touch-action/safe-area）。主要使用場景為電腦。
-- [x] **據點⇄兵裝對應已完成**（63 據點全填，依使用者提供的區域組合：冀州9、涼州10、中原14、青州9、蜀6、江東15；commit 待 push）
-- [ ] 兵裝材料（items 的 `materials`）部分提供：7/31 有材料（丹陽兵、黃巾浮水團、大漢羽林軍、解煩兵、橫江射士、解煩火部、江東飛槊，來源為新野的資料），其餘 24 個待補
+- [x] **據點⇄兵裝對應已完成**（63 據點全填，依使用者提供的區域組合：冀州9、涼州10、中原14、青州9、蜀6、江東15；commit 675201c 已 push）
+- [x] **兵裝材料已全填**（31 個可製作兵裝全部有 `materials`，來源 `回報用/需求.txt`；格式 `普50`＝皮50 鐵50、`普200 高20`＝皮200 鐵200 韌皮20 精鐵20）
+- [x] **常駐資源面板**（取代彈出視窗）：地圖左上常駐顯示所選據點的兵裝材料（`index.html` 的 `#detailPanel`），含數量欄（預設 1，材料 × 數量）、我的資源輸入（皮/鐵/韌皮/精鐵，存 localStorage key `sanguo_player_res`）、合計所需；資源不足顯示紅字、足夠顯示材料原色（app.js `renderPanel`）
 
 ## 檔案結構
 
 - `index.html` / `style.css` / `app.js`：全部互動邏輯
-- `data/items.json`：兵裝 `{ id, name, image, materials: {材料:數量}, craftable? }`，`id` 為拼音檔名，`image` 指向 `assets/soldier/<拼音>.png`。目前 38 筆；31 個可製作，7 個 `craftable: false`（非兵裝單位，僅留存譜面）
+- `data/items.json`：兵裝 `{ id, name, image, materials: {材料:數量}, craftable?, tier? }`，`id` 為拼音檔名，`image` 指向 `assets/soldier/<星數>_<拼音>.png`。目前 38 筆；31 個可製作，7 個 `craftable: false`（非兵裝單位，僅留存譜面）。**階級**：`tier`＝星數（已全填，1–5 含 0.5 級），`app.js` 依 `tier` 高→低排序，`craftable: false` 固定在最底部、圖片保持原色、點擊無作用
 - `data/markers.json`：63 據點 `{ id, name, x, y, items: [兵裝id] }`，`x`/`y` 是地圖上的百分比（0–100，左上角 0,0）
 - `assets/map.png`：正式地圖背景（1122x771）。換圖要同時改 `style.css` 的 `.map-wrap` `aspect-ratio`（目前 `1122 / 771`）
 - `assets/soldier/`：38 個兵裝截圖（拼音檔名，**已 commit**）
@@ -62,8 +63,8 @@
 
 ## 下次對話主要任務
 
-1. **兵裝材料**：使用者陸續補材料（格式：`普50`＝皮50 鐵50、`普200 高20`＝皮200 鐵200 韌皮20 精鐵20）。已完成的 7 個見上。填完 `items.json` 的 `materials` 即全地圖生效。
-2. 將本次已完成的據點⇄兵裝對應 commit + push。⚠ 只能 add 指定檔案（`data/`），不能 `add -A`。
+1. **資源圖示（可選）**：使用者曾提議提供資源圖示（皮/鐵/韌皮/精鐵）來取代文字色塊；若要換圖示需使用者提供圖片。
+2. commit + push 本次資源面板與材料更新。⚠ 只能 add 指定檔案（`data/`、`index.html`、`app.js`、`style.css`、AGENTS.md），不能 `add -A`。
 
 ## 環境限制（重要）
 
