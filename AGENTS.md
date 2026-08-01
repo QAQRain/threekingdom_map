@@ -18,16 +18,16 @@
 - [x] **63 個真實據點座標已匯入** `data/markers.json`（名字已轉繁體）
 - [x] **座標點選工具**：`tools/coord-picker.html`（載入地圖點擊標記＋輸入名字＋匯出 JSON）
 - [x] **據點已全量重新標點**：使用者用工具「1:1」模式重標 63 點（commit 182ceac），以房子圖示底部對準座標（style.css `.marker` 錨點修正，commit 237cff6），使用者確認位置 OK
-- [x] **38 個兵裝截圖已上線**：`assets/soldier/`（檔名已由使用者改中文 → 轉拼音，如 丹陽兵=`danyangbing.png`），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}}`
+- [x] **兵裝截圖已上線**：`assets/soldier/`（檔名已由使用者改中文 → 轉拼音，如 丹陽兵=`danyangbing.png`），`data/items.json` 含 38 筆 `{id(拼音), name(中文), image, materials:{}, craftable}`。其中 **7 個非兵裝單位**（刀牌手、工匠團、弓箭衛、弩衛、採藥隊、突騎營、長槍營）標 `craftable: false`，顯示在列表最底部、點擊無作用（app.js `renderSidebar` 排序 + `.inactive` 樣式）
 - [x] **兵裝清單改為純圖片顯示**（app.js `renderSidebar` 用 `<img>`，圖上本身有兵裝名稱；commit 15f66b5）
 - [x] **手機版優化**（commit b4d0184、4194fb1）：地圖可縮放（右下角 ＋/−/100% 按鈕，**標點隨地圖同步縮放**）、桌面滑鼠**拖曳移動**地圖（drag-to-pan，拖曳不會誤觸據點）、手機彈窗**固定左上角**、手機縮放按鈕改放右上並觸控最佳化（touch-action/safe-area）。主要使用場景為電腦。
-- [ ] **據點⇄兵裝對應尚未提供**（`data/markers.json` 目前所有據點 `items: []`）——下次對話的主要工作
-- [ ] 兵裝材料（items 的 `materials`）未提供（目前全空）
+- [x] **據點⇄兵裝對應已完成**（63 據點全填，依使用者提供的區域組合：冀州9、涼州10、中原14、青州9、蜀6、江東15；commit 待 push）
+- [ ] 兵裝材料（items 的 `materials`）部分提供：7/31 有材料（丹陽兵、黃巾浮水團、大漢羽林軍、解煩兵、橫江射士、解煩火部、江東飛槊，來源為新野的資料），其餘 24 個待補
 
 ## 檔案結構
 
 - `index.html` / `style.css` / `app.js`：全部互動邏輯
-- `data/items.json`：兵裝 `{ id, name, image, materials: {材料:數量} }`，`id` 為拼音檔名，`image` 指向 `assets/soldier/<拼音>.png`
+- `data/items.json`：兵裝 `{ id, name, image, materials: {材料:數量}, craftable? }`，`id` 為拼音檔名，`image` 指向 `assets/soldier/<拼音>.png`。目前 38 筆；31 個可製作，7 個 `craftable: false`（非兵裝單位，僅留存譜面）
 - `data/markers.json`：63 據點 `{ id, name, x, y, items: [兵裝id] }`，`x`/`y` 是地圖上的百分比（0–100，左上角 0,0）
 - `assets/map.png`：正式地圖背景（1122x771）。換圖要同時改 `style.css` 的 `.map-wrap` `aspect-ratio`（目前 `1122 / 771`）
 - `assets/soldier/`：38 個兵裝截圖（拼音檔名，**已 commit**）
@@ -62,8 +62,8 @@
 
 ## 下次對話主要任務
 
-1. **據點⇄兵裝對應**：使用者提供每個據點能造的兵裝（貼 `markers.json` 或對應清單），填入 `data/markers.json` 各據點的 `items`，push 後即完成雙向連動。
-2. （可選）兵裝材料資料（`items.materials`）。
+1. **兵裝材料**：使用者陸續補材料（格式：`普50`＝皮50 鐵50、`普200 高20`＝皮200 鐵200 韌皮20 精鐵20）。已完成的 7 個見上。填完 `items.json` 的 `materials` 即全地圖生效。
+2. 將本次已完成的據點⇄兵裝對應 commit + push。⚠ 只能 add 指定檔案（`data/`），不能 `add -A`。
 
 ## 環境限制（重要）
 
